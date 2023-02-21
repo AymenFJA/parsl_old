@@ -68,6 +68,13 @@ $(WORKQUEUE_INSTALL):
 workqueue_ex_test: $(WORKQUEUE_INSTALL)  ## run all tests with workqueue_ex config
 	PYTHONPATH=.:/tmp/cctools/lib/python3.8/site-packages  pytest parsl/tests/ -k "not cleannet and not issue363" --config parsl/tests/configs/workqueue_ex.py --random-order
 
+.PHONY: radical_ex_test
+radical_ex_test: ## run all tests with radical_ex config
+	pip3 install radical.pilot
+	PYTHONPATH=.  pytest parsl/tests/test_callables.py -k "not cleannet and not dynamically_loaded_module and not test_check_importlib_file_function" --config parsl/tests/test_radical/rpex.py
+	PYTHONPATH=.  export RP_BULK=bulk && pytest parsl/tests/test_radical/test_radical_bulk.py  --config parsl/tests/test_radical/rpex.py
+	#PYTHONPATH=.  export RP_MPI=mpi  && pytest parsl/tests/test_radical/test_radical_mpi.py  --config parsl/tests/test_radical/rpex.py
+
 .PHONY: config_local_test
 config_local_test:
 	echo "$(MPI)"
