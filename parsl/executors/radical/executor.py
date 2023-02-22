@@ -120,7 +120,13 @@ class RadicalPilotExecutor(NoStatusHandlingExecutor, RepresentationMixin):
                 parsl_task.set_exception(AppException(rp.CANCELED))
 
             elif state == rp.FAILED:
-                parsl_task.set_exception(AppException(task.stderr))
+                # failure on the executable/function level
+                if task.stderr:
+                    parsl_task.set_exception(AppException(task.stderr))
+
+                # failure on the task prep/launch level
+                elif task.exception:
+                    parsl_task.set_exception(AppException(task.exception_detail))
 
     def start(self):
         """Create the Pilot component and pass it.
